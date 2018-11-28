@@ -1,9 +1,11 @@
 Filepaths: 
 
-/Volumes/HOME_INTEL/RNAseq-POMV/Results/ControlvsPOMV24_ALL.csv
+/home/sam079/RNAseq-POMV/Results/ControlvsPOMV24_ALL.csv
 
-/Users/sam079/Documents/2018_Transcription_factors/Data/GCF_000233375.1_ICSASG_v2_genomic.gff
+/OSM/CBR/AF_POMV/work/POMV_RNA_seq/Genomes/Salmo_salar/GCF_000233375.1_ICSASG_v2_genomic.gff
 
-/Volumes/OSM_CBR_AF_POMV_work/POMV_RNA_seq/Genomes/Salmo_salar/GCF_000233375.1_ICSASG_v2_genomic.fna
+/OSM/CBR/AF_POMV/work/POMV_RNA_seq/Genomes/Salmo_salar//GCF_000233375.1_ICSASG_v2_genomic.fna
 
-
+Output file:
+/home/sam079/Transcription_factors/Results/background_sequences_POMV24.txt
+/home/sam079/Transcription_factors/Results/target_sequences_POMV24.txt

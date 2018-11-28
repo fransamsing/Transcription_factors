@@ -59,13 +59,12 @@ def get_features(gff, feature, search_gff, attribute, coord):
     CDS = CDS.copy()
 
     RE_GENE_NAME = re.compile(r'({}\W)(?P<gene_id>.+?)[,;]'.format(search_gff))
-
     def extract_gene_name(attributes_str):
         res = RE_GENE_NAME.search(attributes_str)
-        if res is None: 
-        	return ''
-        else: 
-        	return res.group('gene_id')
+        if res is None:
+            return ''
+        else:
+            return res.group('gene_id')
     CDS['gene_id'] = CDS.attributes.apply(extract_gene_name)
     
     RE_DESC = re.compile(r'({}\W)(?P<attribute>.+?)[,;]'.format(attribute))
@@ -75,7 +74,6 @@ def get_features(gff, feature, search_gff, attribute, coord):
             return ''
         else:
             return res.group('attribute')
-
     CDS['attribute'] = CDS.attributes.apply(extract_description)
 
     CDS.drop('attributes', axis=1, inplace=True)
@@ -83,14 +81,14 @@ def get_features(gff, feature, search_gff, attribute, coord):
     if coord == 'all':
         CDS_start_points = CDS
     elif coord == 'min':
-        CDS_start_points = (CDS.groupby(['seqid', 'ENTREZID', 'attribute', 'strand'], as_index=False)['start'].min())
+        CDS_start_points = (CDS.groupby(['seqid', 'gene_id', 'attribute', 'strand'], as_index=False)['start'].min())
     elif coord == 'max':
-        CDS_start_points = (CDS.groupby(['seqid', 'ENTREZID', 'attribute', 'strand'], as_index=False)['start'].max())
+        CDS_start_points = (CDS.groupby(['seqid', 'gene_id', 'attribute', 'strand'], as_index=False)['start'].max())
     elif coord == 'median':
-        CDS_start_points = (CDS.groupby(['seqid', 'ENTREZID', 'attribute', 'strand'], as_index=False)['start'].median())
+        CDS_start_points = (CDS.groupby(['seqid', 'gene_id', 'attribute', 'strand'], as_index=False)['start'].median())
         CDS_start_points = CDS_start_points.astype({'start':int})
     else:
-        print('Non valid argument given to extract gene coordinates for start position')
+        print('Non valid argument given to extraxt gene coordinates for start position')
       
     return CDS_start_points
 
@@ -157,27 +155,29 @@ def create_target_fasta(DEgenes, CDS_start_points, genome, target_outfile, upstr
         seq_dict[genes] = sequences
         seq_list.append(seq_dict)
         seq_dict = {}
-
+    
     for d in seq_list:
         for key, value in d.items():
             outfile.write(">" + key + " " + value.fancy_name + "\n" + value.seq + "\n")
     
     outfile.close() 
+    
+    return seq_list 
 
 def main():
     
     parser=argparse.ArgumentParser(description="Get target and background sequences to use in oPPOSSUM (http://opossum.cisreg.ca/cgi-bin/oPOSSUM3/opossum_seq_ssa) to finds transcription factor binding sites (TFBS)")
     parser.add_argument("-filepath", dest = "filepath", help="Filepath to csv file with differentially expressed genes", type=str, required=True)
-    parser.add_argument("-gff", dest="gff", help="filepath to gff file", type=str, required=True)
+    parser.add_argument("-gff", dest="gff", help="Filepath to gff file", type=str, required=True)
     parser.add_argument("-genome", dest="genome", help="Filepath genome fasta file", type=str, required=True)
     parser.add_argument("-target_out", dest="target_outfile", help="Filename or filepath to output target sequences. Defaults to target_sequences.txt", default="target_sequences.txt", type=str)
     parser.add_argument("-background_out", dest= "background_outfile", help="Filename or filepath to output background sequences. Defaults to background_sequences.txt", type=str, default = "background_sequences.txt")
     parser.add_argument("-g","--gene_id", dest ="gene_id", help="Column header in file with differentially expressed genes containing the gene ids. Defaults to ENTREZID", type=str, default="ENTREZID")
     parser.add_argument("-ti","--threshold_id", dest = "threshold_col_id", help="Column header in file with differentially expressed genes containing the threshold values. Defaults to logFC", type=str, default = "logFC") 
     parser.add_argument("-th","--threshold", dest = "threshold", help="Threshold value. Defaults to a value of 2", type=int, default = 2) 
-    parser.add_argument("-sg", "--search_gff", dest = "search_gff", help="Tag in the gff file indicating the gene IDs. Defaults to gene ID using the following regex pattern: 'GeneID:' ", type=str, default = "GeneID:")
+    parser.add_argument("-sg", "--search_gff", dest = "search_gff", help="Tag in the gff file indicating the gene IDs. Defaults to gene ID using the following regex pattern: GeneID ", type=str, default = "GeneID")
     parser.add_argument("-cd", "--feature", dest = "feature", help="Feature to extract from the gff. Defaults to CDS", type=str, default = "CDS")
-    parser.add_argument("-at", "--attribute", dest = "attribute", help="Tag of an additional attribute to extract from gff. Defaults to gene product using the following regex pattern: 'product='", type=str, default = "product=")
+    parser.add_argument("-at", "--attribute", dest = "attribute", help="Tag of an additional attribute to extract from gff. Defaults to gene product using the following regex pattern: product", type=str, default = "product")
     parser.add_argument("-ps", "--coordinate", dest = "coord", help="Start coordinate to extract from the gff. Choices include all, min, max and median start coordinates. Defaults to min", type=str, choices=['all','min','max','median'], default = "min")
     parser.add_argument("-u", "--upstream_nucl", dest = "upstream_nucl", help="Number of upstream nucleotides to extract from the genome, starting the CDS start coordinate. Defaults to 5000", type=int, default=5000)
     args = parser.parse_args()
