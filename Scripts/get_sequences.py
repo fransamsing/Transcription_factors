@@ -6,9 +6,9 @@ import math
 import re
 from pyfaidx import Fasta
 
-    #Signature: string, string, int, string -> object 
-    #Purpose: to filter differentially expressed genes by a threshold value such as logFC
-    #Stub:
+#Signature: string, string, int, string -> object 
+#Purpose: to filter differentially expressed genes by a threshold value such as logFC
+#Stub:
 def get_degenes(filepath, gene_id, threshold, threshold_col_id):
     """ 
     Format gene IDs as character strings (required for downstream functions) and filter differentially expressed genes by a trehold value such as logFC. 
@@ -16,7 +16,7 @@ def get_degenes(filepath, gene_id, threshold, threshold_col_id):
     The function checks if gene IDs are floats or integers, and transforms these to character strings. 
     Then it filters differentially expressed genes by a treshold value such as logFC. 
     The function returns a one-column Pandas dataframe containing the gene IDs of 
-    the filtered differentially expressed genes. 
+    of differentially expressed genes. 
     
     Example:
     def_degenes('path_to_file.csv', 'ENTREZID', 2, 'logFC')
@@ -166,20 +166,20 @@ def create_target_fasta(DEgenes, CDS_start_points, genome, target_outfile, upstr
 
 def main():
     
-    parser=argparse.ArgumentParser(description="Get target and background sequences to use in oPPOSSUM (http://opossum.cisreg.ca/cgi-bin/oPOSSUM3/opossum_seq_ssa) to finds transcription factor binding sites (TFBS)")
-    parser.add_argument("-filepath", dest = "filepath", help="Filepath to csv file with differentially expressed genes", type=str, required=True)
-    parser.add_argument("-gff", dest="gff", help="Filepath to gff file", type=str, required=True)
-    parser.add_argument("-genome", dest="genome", help="Filepath genome fasta file", type=str, required=True)
-    parser.add_argument("-target_out", dest="target_outfile", help="Filename or filepath to output target sequences. Defaults to target_sequences.txt", default="target_sequences.txt", type=str)
-    parser.add_argument("-background_out", dest= "background_outfile", help="Filename or filepath to output background sequences. Defaults to background_sequences.txt", type=str, default = "background_sequences.txt")
-    parser.add_argument("-g","--gene_id", dest ="gene_id", help="Column header in file with differentially expressed genes containing the gene ids. Defaults to ENTREZID", type=str, default="ENTREZID")
-    parser.add_argument("-ti","--threshold_id", dest = "threshold_col_id", help="Column header in file with differentially expressed genes containing the threshold values. Defaults to logFC", type=str, default = "logFC") 
-    parser.add_argument("-th","--threshold", dest = "threshold", help="Threshold value. Defaults to a value of 2", type=int, default = 2) 
-    parser.add_argument("-sg", "--search_gff", dest = "search_gff", help="Tag in the gff file indicating the gene IDs. Defaults to gene ID using the following regex pattern: GeneID ", type=str, default = "GeneID")
-    parser.add_argument("-cd", "--feature", dest = "feature", help="Feature to extract from the gff. Defaults to CDS", type=str, default = "CDS")
-    parser.add_argument("-at", "--attribute", dest = "attribute", help="Tag of an additional attribute to extract from gff. Defaults to gene product using the following regex pattern: product", type=str, default = "product")
-    parser.add_argument("-ps", "--coordinate", dest = "coord", help="Start coordinate to extract from the gff. Choices include all, min, max and median start coordinates. Defaults to min", type=str, choices=['all','min','max','median'], default = "min")
-    parser.add_argument("-u", "--upstream_nucl", dest = "upstream_nucl", help="Number of upstream nucleotides to extract from the genome, starting the CDS start coordinate. Defaults to 5000", type=int, default=5000)
+    parser=argparse.ArgumentParser(description="Extract the upstream sequences from both differentially expressed and random background genes as fasta files to find transcription factor binding sites (TFBS). The fasta files can be used to query the web-based system oPPOSSUM (http://opossum.cisreg.ca/cgi-bin/oPOSSUM3/opossum_seq_ssa)")
+    parser.add_argument("-filepath", dest = "filepath", help="filepath to csv file with differentially expressed genes", type=str, required=True)
+    parser.add_argument("-gff", dest="gff", help="filepath to gff file", type=str, required=True)
+    parser.add_argument("-genome", dest="genome", help="filepath to genome fasta file", type=str, required=True)
+    parser.add_argument("-target_out", dest="target_outfile", help="filepath and filename to output target sequences. Defaults to target_sequences.txt", default="target_sequences.txt", type=str)
+    parser.add_argument("-background_out", dest= "background_outfile", help="filepath and filename to output background sequences. Defaults to background_sequences.txt", type=str, default = "background_sequences.txt")
+    parser.add_argument("-g","--gene_id", dest ="gene_id", help="column header in file with differentially expressed genes containing the gene ids. Defaults to ENTREZID", type=str, default="ENTREZID")
+    parser.add_argument("-ti","--threshold_id", dest = "threshold_col_id", help="column header in file with differentially expressed genes containing the threshold values. Defaults to logFC", type=str, default = "logFC") 
+    parser.add_argument("-th","--threshold", dest = "threshold", help="threshold value. Defaults to a value of 2", type=int, default = 2) 
+    parser.add_argument("-sg", "--search_gff", dest = "search_gff", help="tag in the gff file indicating the gene IDs. Defaults to gene ID using the following regex pattern: GeneID ", type=str, default = "GeneID")
+    parser.add_argument("-cd", "--feature", dest = "feature", help="feature to extract from the gff. Defaults to CDS", type=str, default = "CDS")
+    parser.add_argument("-at", "--attribute", dest = "attribute", help="tag of an additional attribute to extract from gff. Defaults to gene product using the following regex pattern: product", type=str, default = "product")
+    parser.add_argument("-ps", "--coordinate", dest = "coord", help="start coordinate to extract from the gff. Choices include all, min, max and median start coordinates. Defaults to min", type=str, choices=['all','min','max','median'], default = "min")
+    parser.add_argument("-u", "--upstream_nucl", dest = "upstream_nucl", help="Number of upstream nucleotides to extract from the genome upstream from the start coordinate of the genomic feature. Defaults to 5000", type=int, default=5000)
     args = parser.parse_args()
     
     DEgenes1 = get_degenes(filepath=args.filepath, gene_id=args.gene_id, threshold=args.threshold, threshold_col_id=args.threshold_col_id)
