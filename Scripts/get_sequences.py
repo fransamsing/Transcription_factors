@@ -114,7 +114,7 @@ def create_background_fasta(CDS_start_points, genome, background_outfile, upstre
     for index, row in CDS_random.iterrows():
         genes = row['gene_id']
         if row['start'] > upstream_nucl:
-            sequences = genome[row['seqid']][row['start'] - upstream_nucl:row['start'] + 3]
+            sequences = genome[row['seqid']][row['start'] - upstream_nucl:row['start']]
         else:
             sequences = genome[row['seqid']][row['start'] - row['start']:row['start']]
         back_dict[genes] = sequences
@@ -149,7 +149,7 @@ def create_target_fasta(DEgenes, CDS_start_points, genome, target_outfile, upstr
     for index, row in newdf.iterrows():
         genes = row['gene_id']
         if row['start'] > upstream_nucl:
-            sequences = genome[row['seqid']][row['start'] - upstream_nucl:row['start'] + 3]
+            sequences = genome[row['seqid']][row['start'] - upstream_nucl:row['start']]
         else:
             sequences = genome[row['seqid']][row['start'] - row['start']:row['start']]
         seq_dict[genes] = sequences
@@ -179,7 +179,7 @@ def main():
     parser.add_argument("-cd", "--feature", dest = "feature", help="feature to extract from the gff. Defaults to CDS", type=str, default = "CDS")
     parser.add_argument("-at", "--attribute", dest = "attribute", help="tag of an additional attribute to extract from gff. Defaults to gene product using the following regex pattern: product", type=str, default = "product")
     parser.add_argument("-ps", "--coordinate", dest = "coord", help="start coordinate to extract from the gff. Choices include all, min, max and median start coordinates. Defaults to min", type=str, choices=['all','min','max','median'], default = "min")
-    parser.add_argument("-u", "--upstream_nucl", dest = "upstream_nucl", help="Number of upstream nucleotides to extract from the genome upstream from the start coordinate of the genomic feature. Defaults to 5000", type=int, default=5000)
+    parser.add_argument("-u", "--upstream_nucl", dest = "upstream_nucl", help="Number of upstream nucleotides to extract from the genome upstream from the start coordinate of the genomic feature. Defaults to 1000", type=int, default=1000)
     args = parser.parse_args()
     
     DEgenes1 = get_degenes(filepath=args.filepath, gene_id=args.gene_id, threshold=args.threshold, threshold_col_id=args.threshold_col_id)
