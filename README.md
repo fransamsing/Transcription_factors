@@ -12,5 +12,7 @@ In the Scripts/ directory there is another .py program called get_upstream_seq.p
 
 Upstream sequences from differentially expressed genes are likely to contain transcription factor binding site motifs. 
 
+Results from these functions are stored in the Data/ directory 
+
 
 ![Alt text](https://ka-perseus-images.s3.amazonaws.com/6567f50d30ad3ac65aff1e815caf202b3abd7111.png)
